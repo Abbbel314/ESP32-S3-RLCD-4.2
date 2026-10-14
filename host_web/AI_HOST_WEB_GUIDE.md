@@ -2,7 +2,7 @@
 
 This document is for future AI agents or developers taking over `host_web/`.
 
-Current maintenance baseline: firmware v1.6.15, Host Web v1.0.12 and cache v86.
+Current maintenance baseline: firmware v1.6.16, Host Web v1.0.12 and cache v86.
 Read version fields rather than relying on historical paragraphs below. The
 current private checkout also has a Chinese maintenance entry at repository-root
 MAINTENANCE_START_HERE.md; that internal handoff is not part of the public export.

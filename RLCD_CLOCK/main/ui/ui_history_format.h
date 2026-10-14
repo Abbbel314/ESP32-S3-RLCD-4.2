@@ -10,8 +10,25 @@ struct HistoryAxisRange {
     float maximum;
 };
 
+struct HistoryCurvePoint {
+    int x;
+    float value;
+};
+
+struct HistoryCurveSegment {
+    float from;
+    float to;
+    float from_tangent;
+    float to_tangent;
+};
+
 HistoryAxisRange history_axis_range(bool temperature, float minimum, float maximum);
 int history_value_to_plot_y(float value, float minimum, float maximum, int y, int height);
+HistoryCurveSegment history_curve_segment(const HistoryCurvePoint &from,
+                                          const HistoryCurvePoint &to,
+                                          const HistoryCurvePoint *before = nullptr,
+                                          const HistoryCurvePoint *after = nullptr);
+float history_curve_value(const HistoryCurveSegment &segment, float position);
 void format_history_axis_hour(time_t value, char *out, size_t out_len);
 void format_history_axis_value(bool temperature, float value, char *out, size_t out_len);
 void format_history_badge_value(bool temperature, float value, char *out, size_t out_len);

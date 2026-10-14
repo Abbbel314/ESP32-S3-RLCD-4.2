@@ -200,38 +200,47 @@ void draw_history_chart_panel(lv_obj_t *canvas,
     format_history_axis_value(temperature, axis.minimum, axis_text, sizeof(axis_text));
     set_label_text_if_changed(axis_labels[kHistoryAxisMinIndex], axis_text);
 
-    int prev_x = 0;
-    int prev_y = 0;
-    time_t prev_ts = 0;
-    bool have_prev = false;
     time_t start = samples[0].timestamp - kHistorySecondsPerHour;
-    for (int i = 0; i < sample_count; ++i) {
-        if (!samples[i].valid) {
-            have_prev = false;
+    const auto can_connect = [&](int left, int right) {
+        const int64_t gap = samples[right].timestamp - samples[left].timestamp;
+        return samples[left].valid && samples[right].valid && gap > 0 &&
+               gap <= kHistoryMaxConnectedGapHours * kHistorySecondsPerHour;
+    };
+    const auto curve_point = [&](int index) {
+        int x = plot_x + static_cast<int>(((samples[index].timestamp - start) * plot_w) /
+                                          (kHistoryWindowHours * kHistorySecondsPerHour));
+        return HistoryCurvePoint{clamp_int(x, plot_x, plot_x + plot_w),
+                                 history_sample_value(samples[index], temperature)};
+    };
+    for (int i = 1; i < sample_count; ++i) {
+        if (!can_connect(i - 1, i)) {
             continue;
         }
-        int x = plot_x + static_cast<int>(((samples[i].timestamp - start) * plot_w) /
-                                           (kHistoryWindowHours * kHistorySecondsPerHour));
-        float value = history_sample_value(samples[i], temperature);
-        int y = history_value_to_plot_y(value, axis.minimum, axis.maximum, plot_y, plot_h);
-        x = clamp_int(x, plot_x, plot_x + plot_w);
-        y = clamp_int(y, plot_y, plot_y + plot_h);
-        if (have_prev &&
-            samples[i].timestamp - prev_ts <=
-                kHistoryMaxConnectedGapHours * kHistorySecondsPerHour) {
+        const HistoryCurvePoint from = curve_point(i - 1);
+        const HistoryCurvePoint to = curve_point(i);
+        const bool have_before = i > 1 && can_connect(i - 2, i - 1);
+        const bool have_after = i + 1 < sample_count && can_connect(i, i + 1);
+        const HistoryCurvePoint before = have_before ? curve_point(i - 2) : from;
+        const HistoryCurvePoint after = have_after ? curve_point(i + 1) : to;
+        const HistoryCurveSegment segment = history_curve_segment(
+            from, to, have_before ? &before : nullptr, have_after ? &after : nullptr);
+        int prev_y = history_value_to_plot_y(from.value, axis.minimum, axis.maximum,
+                                             plot_y, plot_h);
+        for (int x = from.x + 1; x <= to.x; ++x) {
+            const float position = static_cast<float>(x - from.x) / (to.x - from.x);
+            const float value = history_curve_value(segment, position);
+            const int y = history_value_to_plot_y(value, axis.minimum, axis.maximum,
+                                                  plot_y, plot_h);
             canvas_draw_line(canvas,
                              canvas_w,
                              canvas_h,
-                             prev_x,
+                             x - 1,
                              prev_y,
                              x,
-                             y,
+                             clamp_int(y, plot_y, plot_y + plot_h),
                              lv_color_black());
+            prev_y = y;
         }
-        prev_x = x;
-        prev_y = y;
-        prev_ts = samples[i].timestamp;
-        have_prev = true;
     }
 
     if (max_index >= 0) {

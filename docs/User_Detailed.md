@@ -45,6 +45,8 @@ A small header clock appears only where the main content does not already show t
 
 The Aggregate Clock background follows the weather data. Fog appears as layered horizontal bands; the background is not animated, while the clock continues to update every second.
 
+The history graph uses smooth lines through the original hourly readings and keeps the minimum/maximum markers. Missing readings leave gaps; smoothing neither changes recorded values nor fills missing samples.
+
 Weather-service temperature and the onboard sensor describe different locations. Trend arrows compare rolling averages of valid samples from the last four hours; samples accumulate again after reboot.
 
 Built-in images match the weekday and change at midnight. Uploaded galleries take priority and can rotate every 30 minutes, 1, 6, 12, or 24 hours, aligned to midnight. Daily text has its own cache.

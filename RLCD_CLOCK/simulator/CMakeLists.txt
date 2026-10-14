@@ -58,6 +58,7 @@ add_executable(weather_clock_sdl
     "sdl_preview_work_status.cpp"
     "sdl_preview_xiaozhi.cpp"
     "../main/ui/ui_dseg_render.cpp"
+    "../main/ui/ui_history_format.cpp"
     "../main/ui/ui_aggregate_clock_view.cpp"
     "../main/network/qweather_icons.cpp"
     "../main/assets/boot_anim.c"
@@ -109,4 +110,12 @@ target_link_libraries(aggregate_clock_view_test PRIVATE lvgl)
 add_executable(settings_visual_style_test "../tests/settings_visual_style_host_test.cpp")
 target_include_directories(settings_visual_style_test PRIVATE "../main/ui" "../components/app_bsp")
 target_link_libraries(settings_visual_style_test PRIVATE lvgl)
+
+add_executable(history_chart_test
+    "../tests/ui_history_chart_host_test.cpp"
+    "../main/ui/ui_history_chart.cpp"
+    "../main/ui/ui_history_format.cpp")
+target_include_directories(history_chart_test PRIVATE
+    "../tests/host_stubs" "../main/core" "../main/ui" "../main/sensors")
+target_link_libraries(history_chart_test PRIVATE lvgl)
 endif()

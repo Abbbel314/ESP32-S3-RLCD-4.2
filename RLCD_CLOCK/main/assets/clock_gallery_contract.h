@@ -6,8 +6,8 @@ inline constexpr int CLOCK_GALLERY_IMAGE_WIDTH = 220;
 inline constexpr int CLOCK_GALLERY_IMAGE_HEIGHT = 208;
 inline constexpr int CLOCK_GALLERY_IMAGE_BYTES_PER_ROW = 28;
 inline constexpr int CLOCK_GALLERY_IMAGE_COUNT = 7;
-inline constexpr int CLOCK_GALLERY_IMAGE_DEFAULT_THRESHOLD = 200;
-inline constexpr int CLOCK_GALLERY_IMAGE_DEFAULT_EDGE_FADE_PX = 18;
+inline constexpr int CLOCK_GALLERY_IMAGE_DEFAULT_THRESHOLD = 141;
+inline constexpr int CLOCK_GALLERY_IMAGE_DEFAULT_EDGE_FADE_PX = 8;
 
 static_assert(CLOCK_GALLERY_IMAGE_WIDTH > 0, "Gallery image width must be positive");
 static_assert(CLOCK_GALLERY_IMAGE_HEIGHT > 0, "Gallery image height must be positive");
@@ -16,5 +16,5 @@ static_assert(CLOCK_GALLERY_IMAGE_BYTES_PER_ROW ==
               "Gallery image row stride mismatch");
 static_assert(CLOCK_GALLERY_IMAGE_COUNT > 0, "Gallery image table must not be empty");
 static_assert(CLOCK_GALLERY_IMAGE_COUNT == 7, "Built-in gallery must cover every weekday");
-static_assert(CLOCK_GALLERY_IMAGE_DEFAULT_EDGE_FADE_PX > 0,
-              "Gallery default edge fade must be positive");
+static_assert(CLOCK_GALLERY_IMAGE_DEFAULT_EDGE_FADE_PX >= 0,
+              "Gallery default edge fade must not be negative");

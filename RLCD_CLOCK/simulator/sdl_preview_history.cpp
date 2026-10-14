@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "sdl_preview_widgets.h"
+#include "ui_history_format.h"
 #include "ui_history_layout.h"
 
 LV_FONT_DECLARE(zh_font_16);
@@ -168,24 +169,34 @@ void draw_preview_history_panel(lv_obj_t *canvas,
     snprintf(text, sizeof(text), temperature ? "%.0f℃" : "%.0f%%", axis_min);
     set_label_text_if_changed(axis_labels[2], text);
 
-    int prev_x = 0;
-    int prev_y = 0;
-    for (int i = 0; i < kDisplayedWindowHours; ++i) {
-        int x = plot_x + ((i + 1) * plot_w) / kDisplayedWindowHours;
-        float value = temperature ? samples[i].temp : samples[i].humi;
-        int y = value_to_plot_y(value, axis_min, axis_max, plot_y, plot_h);
-        if (i > 0) {
+    const auto curve_point = [&](int index) {
+        return HistoryCurvePoint{
+            plot_x + ((index + 1) * plot_w) / kDisplayedWindowHours,
+            temperature ? samples[index].temp : samples[index].humi};
+    };
+    for (int i = 1; i < kDisplayedWindowHours; ++i) {
+        const HistoryCurvePoint from = curve_point(i - 1);
+        const HistoryCurvePoint to = curve_point(i);
+        const HistoryCurvePoint before = i > 1 ? curve_point(i - 2) : from;
+        const HistoryCurvePoint after = i + 1 < kDisplayedWindowHours ? curve_point(i + 1) : to;
+        const HistoryCurveSegment segment = history_curve_segment(
+            from, to, i > 1 ? &before : nullptr,
+            i + 1 < kDisplayedWindowHours ? &after : nullptr);
+        int prev_y = value_to_plot_y(from.value, axis_min, axis_max, plot_y, plot_h);
+        for (int x = from.x + 1; x <= to.x; ++x) {
+            const float position = static_cast<float>(x - from.x) / (to.x - from.x);
+            const int y = value_to_plot_y(history_curve_value(segment, position),
+                                          axis_min, axis_max, plot_y, plot_h);
             canvas_draw_line(canvas,
                              kCanvasWidth,
                              kCanvasHeight,
-                             prev_x,
+                             x - 1,
                              prev_y,
                              x,
                              y,
                              lv_color_black());
+            prev_y = y;
         }
-        prev_x = x;
-        prev_y = y;
     }
 
     snprintf(text,
