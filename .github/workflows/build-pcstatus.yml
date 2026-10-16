@@ -1,0 +1,47 @@
+name: Build firmware (PC status page)
+
+on:
+  push:
+    branches:
+      - pc-status-page
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pcstatus-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: ESP32-S3 firmware
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build app and merged image
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: v5.5.3
+          target: esp32s3
+          path: RLCD_CLOCK
+          command: >-
+            set -euo pipefail;
+            idf.py build;
+            cp build/weather_clock.bin ../weather_clock_pcstatus.bin;
+            cd build;
+            esptool.py --chip esp32s3 merge_bin -o ../../weather_clock_pcstatus_merged.bin @flash_args
+
+      - name: Upload firmware artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: weather-clock-pcstatus
+          path: |
+            weather_clock_pcstatus.bin
+            weather_clock_pcstatus_merged.bin
+          if-no-files-found: error
+          retention-days: 14
