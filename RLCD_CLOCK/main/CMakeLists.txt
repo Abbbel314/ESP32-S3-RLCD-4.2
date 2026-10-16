@@ -6,6 +6,8 @@ idf_component_register(
         "ui/ui_aggregate_clock.cpp"
         "ui/ui_aggregate_clock_view.cpp"
         "core/main.cpp"
+        "core/pc_status_state.cpp"
+        "core/pc_status_uart.cpp"
         "core/app_task_startup.cpp"
         "core/app_task_readiness.cpp"
         "core/runtime_health.cpp"
