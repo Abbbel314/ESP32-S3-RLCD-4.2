@@ -125,7 +125,7 @@ bool set_work_page_enabled_mask_setting(uint16_t page_mask)
 bool set_work_page_order_setting(const uint8_t *page_order,
                                  size_t page_order_size)
 {
-    const uint8_t page_mask = work_page_enabled_mask_load();
+    const uint16_t page_mask = work_page_enabled_mask_load();
     if (!work_page_order_policy::order_is_valid(page_order, page_order_size) ||
         !work_page_order_policy::order_has_valid_home(
             page_order, page_order_size, page_mask)) {

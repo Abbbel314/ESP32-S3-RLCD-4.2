@@ -44,7 +44,7 @@ inline bool migrate_v4_page_order(const uint8_t *legacy_order,
 static_assert(kWorkPageCount <= 16, "work page enabled mask is stored as uint16_t");
 static_assert(kWorkPageXiaozhiAI == static_cast<int>(kLegacyV4WorkPageCount),
               "v5 migration expects Xiaozhi AI after every v4 page");
-static_assert(kWorkPageAggregateClock == static_cast<int>(kLegacyV6WorkPageCount),
+static_assert(kWorkPageAggregateClock + 1 == static_cast<int>(kLegacyV6WorkPageCount),
               "v6 migration expects aggregate clock to be the final v6 page");
 static_assert(kWorkPageCount == kWorkPagePcStatus + 1,
               "v7 migration expects the PC status page to be the final page");

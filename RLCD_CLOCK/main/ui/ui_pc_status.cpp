@@ -135,7 +135,9 @@ bool update_pc_status_page(const struct tm &local)
     }
     changed |= set_label_text_if_changed(s_pc_row_labels[3], line);
 
-    snprintf(line, sizeof(line), "NET U%u D%u KB/s", pc.net_up_kbps, pc.net_down_kbps);
+    snprintf(line, sizeof(line), "NET U%u D%u KB/s",
+             static_cast<unsigned>(pc.net_up_kbps),
+             static_cast<unsigned>(pc.net_down_kbps));
     changed |= set_label_text_if_changed(s_pc_row_labels[4], line);
 
     return changed;

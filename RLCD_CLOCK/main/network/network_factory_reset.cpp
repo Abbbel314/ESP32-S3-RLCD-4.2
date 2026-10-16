@@ -33,12 +33,14 @@ using network_page_storage::kPageMaskV3Key;
 using network_page_storage::kPageMaskV4Key;
 using network_page_storage::kPageMaskV5Key;
 using network_page_storage::kPageMaskV6Key;
+using network_page_storage::kPageMaskV7Key;
 using network_page_storage::kPageOrderV1Key;
 using network_page_storage::kPageOrderV2Key;
 using network_page_storage::kPageOrderV3Key;
 using network_page_storage::kPageOrderV4Key;
 using network_page_storage::kPageOrderV5Key;
 using network_page_storage::kPageOrderV6Key;
+using network_page_storage::kPageOrderV7Key;
 using network_weather_city_storage::kIgnoredAssetWeatherCityKey;
 using network_weather_city_storage::kManualWeatherCityKey;
 
@@ -67,17 +69,19 @@ constexpr const char *kSavedConfigKeys[] = {
     kPageMaskV4Key,
     kPageMaskV5Key,
     kPageMaskV6Key,
+    kPageMaskV7Key,
     kPageOrderV1Key,
     kPageOrderV2Key,
     kPageOrderV3Key,
     kPageOrderV4Key,
     kPageOrderV5Key,
     kPageOrderV6Key,
+    kPageOrderV7Key,
     kXiaozhiAutoReturnKey,
     kGalleryRotationKey,
 };
 
-static_assert(array_count(kSavedConfigKeys) == 29,
+static_assert(array_count(kSavedConfigKeys) == 31,
               "factory reset key registry count changed; update its host test");
 static_assert(cstr_array_nonempty(kSavedConfigKeys),
               "factory reset config keys must be non-empty");

@@ -49,7 +49,7 @@ using network_config_keys::kWifiPreferredSlotKey;
 using network_config_keys::kWifiSsidKey;
 
 namespace {
-constexpr uint8_t kDefaultWorkPageMask = network_page_storage::kCurrentKnownPageMask;
+constexpr uint16_t kDefaultWorkPageMask = network_page_storage::kCurrentKnownPageMask;
 constexpr const char *kConfigEventReasonFactoryReset = "factory reset";
 constexpr const char *kNvsActionSavingOfflineMode = "saving offline mode";
 constexpr const char *kNvsActionSavingConfig = "saving config";
@@ -110,15 +110,16 @@ bool set_offline_mode_enabled(bool enabled)
         return false;
     }
     uint8_t next_value = bool_to_nvs_u8(enabled);
-    const uint8_t current_page_mask = work_page_enabled_mask_load();
-    uint8_t next_page_mask = enabled
-                                 ? work_page_mask_for_offline_mode(current_page_mask)
-                                 : current_page_mask;
+    const uint16_t current_page_mask = work_page_enabled_mask_load();
+    uint16_t next_page_mask = enabled
+                                  ? work_page_mask_for_offline_mode(current_page_mask)
+                                  : current_page_mask;
     bool offline_changed = false;
     bool page_mask_changed = false;
     err = write_changed_nvs_u8(nvs.get(), err, kOfflineModeKey, next_value, &offline_changed);
     if (enabled) {
-        err = write_changed_nvs_u8(nvs.get(), err, kPageMaskV6Key, next_page_mask, &page_mask_changed);
+        err = network_page_storage::write_work_page_mask_nvs(
+            nvs.get(), err, next_page_mask, &page_mask_changed);
     }
     err = commit_nvs_if_changed(nvs.get(), err, offline_changed || page_mask_changed);
     if (!nvs.close_save_ok(err)) {
