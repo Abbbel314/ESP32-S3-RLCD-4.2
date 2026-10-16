@@ -30,11 +30,15 @@ jobs:
           target: esp32s3
           path: RLCD_CLOCK
           command: >-
-            set -euo pipefail;
-            idf.py build;
-            cp build/weather_clock.bin ../weather_clock_pcstatus.bin;
-            cd build;
-            esptool.py --chip esp32s3 merge_bin -o ../../weather_clock_pcstatus_merged.bin @flash_args
+            set -uo pipefail;
+            if idf.py build > /tmp/build.log 2>&1; then
+              cp build/weather_clock.bin ../weather_clock_pcstatus.bin;
+              cd build;
+              esptool.py --chip esp32s3 merge_bin -o ../../weather_clock_pcstatus_merged.bin @flash_args;
+            else
+              tail -80 /tmp/build.log | sed 's/^/::error::/';
+              exit 1;
+            fi
 
       - name: Upload firmware artifacts
         uses: actions/upload-artifact@v4
