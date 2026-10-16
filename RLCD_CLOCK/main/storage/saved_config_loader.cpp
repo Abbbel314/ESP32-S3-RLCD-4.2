@@ -44,15 +44,15 @@ using network_config_keys::kXiaozhiAutoReturnKey;
 using network_config_keys::kGalleryRotationKey;
 
 namespace {
-constexpr uint8_t work_page_mask_bit(int page)
+constexpr uint16_t work_page_mask_bit(int page)
 {
-    return static_cast<uint8_t>(1U << page);
+    return static_cast<uint16_t>(1U << page);
 }
 
-constexpr uint8_t kPageMaskV4KnownBits = network_page_storage::kLegacyV4KnownPageMask;
-constexpr uint8_t kPageMaskV5KnownBits = network_page_storage::kCurrentKnownPageMask;
-constexpr uint8_t kWeatherBoardPageMask = work_page_mask_bit(kWorkPageWeatherBoard);
-constexpr uint8_t kFlipClockPageMask = work_page_mask_bit(kWorkPageFlipClock);
+constexpr uint16_t kPageMaskV4KnownBits = network_page_storage::kLegacyV4KnownPageMask;
+constexpr uint16_t kCurrentKnownPageBits = network_page_storage::kCurrentKnownPageMask;
+constexpr uint16_t kWeatherBoardPageMask = work_page_mask_bit(kWorkPageWeatherBoard);
+constexpr uint16_t kFlipClockPageMask = work_page_mask_bit(kWorkPageFlipClock);
 constexpr const char *kNvsActionLoadingConfig = "loading config";
 constexpr const char *kOfflinePageMaskPersistFailedLog =
     "failed to persist offline-compatible page settings";
@@ -74,7 +74,7 @@ struct LoadedSavedConfig {
     uint8_t all_day;
     uint8_t volume;
     uint8_t sound;
-    uint8_t page_mask;
+    uint16_t page_mask;
     uint8_t offline;
     uint8_t xiaozhi_auto_return;
     uint8_t gallery_rotation;
@@ -86,14 +86,14 @@ struct LoadedSavedConfig {
 };
 EXT_RAM_BSS_ATTR LoadedSavedConfig s_loaded_saved_config_workspace;
 
-static_assert(kWorkPageCount <= 8, "work page enabled mask is stored as uint8_t");
+static_assert(kWorkPageCount <= 16, "work page enabled mask is stored as uint16_t");
 static_assert((kPageMaskV4KnownBits & work_page_mask_bit(kWorkPageXiaozhiAI)) == 0,
               "page mask v4 must not include Xiaozhi AI page");
-static_assert(kPageMaskV5KnownBits == static_cast<uint8_t>((1U << kWorkPageCount) - 1U),
-              "page mask v5 must cover every current work page");
-static_assert((kPageMaskV5KnownBits & kWeatherBoardPageMask) == kWeatherBoardPageMask,
+static_assert(kCurrentKnownPageBits == static_cast<uint16_t>((1U << kWorkPageCount) - 1U),
+              "page mask v7 must cover every current work page");
+static_assert((kCurrentKnownPageBits & kWeatherBoardPageMask) == kWeatherBoardPageMask,
               "weather board page must be covered by the current page mask");
-static_assert((kPageMaskV5KnownBits & kFlipClockPageMask) == kFlipClockPageMask,
+static_assert((kCurrentKnownPageBits & kFlipClockPageMask) == kFlipClockPageMask,
               "flip clock page must be covered by the current page mask");
 static_assert(std::is_trivially_default_constructible<LoadedSavedConfig>::value,
               "saved config workspace must not require static construction");
@@ -110,18 +110,18 @@ constexpr bool nvs_u8_to_bool(uint8_t value)
     return value != 0;
 }
 
-bool apply_loaded_page_config(uint8_t page_mask,
+bool apply_loaded_page_config(uint16_t page_mask,
                               const uint8_t *page_order,
                               bool have_page_order)
 {
-    const uint8_t online_mask = normalize_work_page_enabled_mask(page_mask);
+    const uint16_t online_mask = normalize_work_page_enabled_mask(page_mask);
     work_page_enabled_mask_store(online_mask);
     if (have_page_order && page_order) {
         work_page_order_replace(page_order, kWorkPageCount);
     } else {
         normalize_work_page_order();
     }
-    uint8_t runtime_mask = online_mask;
+    uint16_t runtime_mask = online_mask;
     if (offline_mode_enabled_load()) {
         runtime_mask = work_page_mask_for_offline_mode(online_mask);
         if (runtime_mask != online_mask) {
@@ -157,7 +157,7 @@ void initialize_loaded_saved_config(LoadedSavedConfig *loaded)
     loaded->key_err = ESP_FAIL;
     loaded->host_err = ESP_FAIL;
     loaded->volume = chime_settings::kDefaultVolumePercent;
-    loaded->page_mask = kPageMaskV5KnownBits;
+    loaded->page_mask = kCurrentKnownPageBits;
     loaded->xiaozhi_auto_return = kDefaultXiaozhiAutoReturnEnabled ? 1 : 0;
     loaded->gallery_rotation = kDefaultGalleryRotationPeriod;
     loaded->preferred_wifi_slot =

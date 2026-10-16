@@ -46,6 +46,9 @@ bool update_visible_work_page_body(const struct tm &local,
     if (state.xiaozhi) {
         changed |= update_xiaozhi_page(local);
     }
+    if (state.pc_status) {
+        changed |= update_pc_status_page(local);
+    }
     return changed;
 }
 

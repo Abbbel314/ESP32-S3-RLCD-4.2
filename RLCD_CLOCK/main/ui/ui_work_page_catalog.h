@@ -14,20 +14,20 @@ struct WorkPageDataRequirements {
 };
 
 bool is_work_page_enabled(int page);
-uint8_t work_page_enabled_mask_load();
+uint16_t work_page_enabled_mask_load();
 bool work_page_requires_network(int page);
 bool work_page_uses_low_refresh_idle(int page);
 WorkPageDataRequirements work_page_data_requirements(int page);
-WorkPageDataRequirements enabled_work_page_data_requirements(uint8_t page_mask);
-uint8_t normalize_work_page_enabled_mask(uint8_t page_mask);
-uint8_t work_page_mask_for_offline_mode(uint8_t page_mask);
+WorkPageDataRequirements enabled_work_page_data_requirements(uint16_t page_mask);
+uint16_t normalize_work_page_enabled_mask(uint16_t page_mask);
+uint16_t work_page_mask_for_offline_mode(uint16_t page_mask);
 const char *work_page_name(int page);
 int first_enabled_work_page();
 int next_enabled_work_page(int current_page);
 int first_enabled_work_page_order_index();
 int next_enabled_work_page_order_index(int current_order_index);
 int valid_enabled_work_page_order_index(int current_order_index);
-bool work_page_mask_has_valid_home(uint8_t page_mask);
+bool work_page_mask_has_valid_home(uint16_t page_mask);
 bool work_page_order_copy(uint8_t *order, size_t order_size);
 bool work_page_order_normalize_and_copy(uint8_t *order, size_t order_size);
 bool work_page_order_swapped_copy_preserving_home(int first_index,

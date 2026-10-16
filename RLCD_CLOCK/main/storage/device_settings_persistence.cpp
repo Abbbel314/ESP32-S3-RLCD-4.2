@@ -17,7 +17,7 @@
 using network_config_nvs::commit_nvs_if_changed;
 using network_config_nvs::ScopedNvsHandle;
 using network_config_nvs::write_changed_nvs_u8;
-using network_page_storage::kPageMaskV6Key;
+using network_page_storage::write_work_page_mask_nvs;
 using network_page_storage::write_work_page_order_nvs;
 using network_config_keys::kXiaozhiAutoReturnKey;
 using network_config_keys::kGalleryRotationKey;
@@ -100,13 +100,22 @@ bool set_chime_setting(const ChimeRuntimeSnapshot &settings)
     return true;
 }
 
-bool set_work_page_enabled_mask_setting(uint8_t page_mask)
+bool set_work_page_enabled_mask_setting(uint16_t page_mask)
 {
-    const uint8_t mask = normalize_work_page_enabled_mask(page_mask);
-    if (!save_changed_u8_setting(kNvsActionSavingPageSettings,
-                                 kNvsFailureContextPageSettings,
-                                 kPageMaskV6Key,
-                                 mask)) {
+    const uint16_t mask = normalize_work_page_enabled_mask(page_mask);
+    ScopedNvsHandle nvs;
+    esp_err_t err = nvs.open(NVS_READWRITE, kNvsActionSavingPageSettings);
+    if (err != ESP_OK) {
+        return false;
+    }
+    bool changed = false;
+    err = write_work_page_mask_nvs(nvs.get(), err, mask, &changed);
+    err = commit_nvs_if_changed(nvs.get(), err, changed);
+    if (!nvs.close_save_ok(err)) {
+        ESP_LOGW(TAG,
+                 NVS_SAVE_U8_SETTING_FAILED_FORMAT,
+                 kNvsFailureContextPageSettings,
+                 esp_err_to_name(err));
         return false;
     }
     work_page_enabled_mask_store(mask);

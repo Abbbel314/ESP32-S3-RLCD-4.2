@@ -13,7 +13,7 @@ struct SettingsSecondaryStateSnapshot {
     bool all_day_chime_enabled;
     uint8_t volume_percent;
     uint8_t sound_index;
-    uint8_t work_page_enabled_mask;
+    uint16_t work_page_enabled_mask;
     bool alarm_enabled;
     uint8_t alarm_hour;
     uint8_t alarm_minute;

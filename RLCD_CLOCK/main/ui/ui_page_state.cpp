@@ -77,6 +77,9 @@ lv_obj_t *build_work_page_root(int page)
     case kWorkPageAggregateClock:
         build_aggregate_clock_page();
         break;
+    case kWorkPagePcStatus:
+        build_pc_status_page();
+        break;
     default:
         return work_page_root(kFallbackWorkPage);
     }

@@ -46,6 +46,7 @@ idf_component_register(
         "ui/ui_settings_navigation.cpp"
         "ui/ui_settings_ota_panel.cpp"
         "ui/ui_settings_actions.cpp"
+        "ui/ui_pc_status.cpp"
         "ui/ui_history.cpp"
         "ui/ui_history_chart.cpp"
         "ui/ui_history_format.cpp"

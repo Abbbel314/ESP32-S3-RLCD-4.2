@@ -9,7 +9,8 @@ inline constexpr int kWorkPageCalendar = 4;
 inline constexpr int kWorkPageHistory = 5;
 inline constexpr int kWorkPageXiaozhiAI = 6;
 inline constexpr int kWorkPageAggregateClock = 7;
-inline constexpr int kWorkPageCount = 8;
+inline constexpr int kWorkPagePcStatus = 8;
+inline constexpr int kWorkPageCount = 9;
 
 // 显示设置中的页面开关与工作页编号保持一一对应。
 inline constexpr int kDisplaySettingsPageItemCount = kWorkPageCount;
@@ -21,13 +22,13 @@ constexpr bool is_valid_work_page_id(int page)
 
 static_assert(kWorkPageWeatherClock == 0,
               "work page ids must start at weather clock zero");
-static_assert(kWorkPageCount == kWorkPageAggregateClock + 1,
+static_assert(kWorkPageCount == kWorkPagePcStatus + 1,
               "work page count must match the last work page id");
 static_assert(kDisplaySettingsPageItemCount == kWorkPageCount,
               "display page setting count must match work page count");
 static_assert(is_valid_work_page_id(kWorkPageWeatherClock),
               "first work page id must be valid");
-static_assert(is_valid_work_page_id(kWorkPageXiaozhiAI),
+static_assert(is_valid_work_page_id(kWorkPagePcStatus),
               "last work page id must be valid");
 static_assert(!is_valid_work_page_id(-1),
               "negative work page ids must be rejected");

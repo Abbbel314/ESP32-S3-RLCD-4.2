@@ -64,8 +64,8 @@ static_assert(sizeof(SettingsRenderWorkspace) ==
               "settings render workspace must contain only secondary text storage");
 static_assert(sizeof(SettingsRenderCache) <= 48,
               "settings render cache must remain a compact UI-only state");
-static_assert(kWorkPageCount <= 8,
-              "settings switch snapshot stores the work-page mask in one byte");
+static_assert(kWorkPageCount <= 16,
+              "settings switch snapshot stores the work-page mask in two bytes");
 static_assert(sizeof(SettingsSecondaryStateSnapshot) <= 12,
               "settings secondary snapshot must remain lightweight");
 
@@ -104,13 +104,13 @@ bool work_page_enabled_in_switch_snapshot(
         return false;
     }
     return (snapshot.work_page_enabled_mask &
-            static_cast<uint8_t>(1U << page)) != 0;
+            static_cast<uint16_t>(1U << page)) != 0;
 }
 
 int collect_visible_work_page_order(int *indices,
                                     uint8_t *pages,
                                     size_t capacity,
-                                    uint8_t enabled_mask)
+                                    uint16_t enabled_mask)
 {
     if (!indices || !pages || capacity == 0) {
         return 0;
@@ -121,7 +121,7 @@ int collect_visible_work_page_order(int *indices,
     }
     int count = 0;
     for (int order_index = 0; order_index < kWorkPageCount && (size_t)count < capacity; ++order_index) {
-        if ((enabled_mask & static_cast<uint8_t>(1U << order[order_index])) != 0) {
+        if ((enabled_mask & static_cast<uint16_t>(1U << order[order_index])) != 0) {
             indices[count] = order_index;
             pages[count] = order[order_index];
             ++count;

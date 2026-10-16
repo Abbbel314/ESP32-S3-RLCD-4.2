@@ -13,15 +13,21 @@ inline constexpr const char *kPageMaskV3Key = "page_mask_v3";
 inline constexpr const char *kPageMaskV4Key = "page_mask_v4";
 inline constexpr const char *kPageMaskV5Key = "page_mask_v5";
 inline constexpr const char *kPageMaskV6Key = "page_mask_v6";
+inline constexpr const char *kPageMaskV7Key = "page_mask_v7";
 inline constexpr const char *kPageOrderV1Key = "page_order_v1";
 inline constexpr const char *kPageOrderV2Key = "page_order_v2";
 inline constexpr const char *kPageOrderV3Key = "page_order_v3";
 inline constexpr const char *kPageOrderV4Key = "page_order_v4";
 inline constexpr const char *kPageOrderV5Key = "page_order_v5";
 inline constexpr const char *kPageOrderV6Key = "page_order_v6";
+inline constexpr const char *kPageOrderV7Key = "page_order_v7";
 
-uint8_t read_saved_page_mask(nvs_handle_t nvs);
+uint16_t read_saved_page_mask(nvs_handle_t nvs);
 bool read_saved_page_order(nvs_handle_t nvs, uint8_t *page_order, size_t page_order_size);
+esp_err_t write_work_page_mask_nvs(nvs_handle_t nvs,
+                                   esp_err_t err,
+                                   uint16_t page_mask,
+                                   bool *changed);
 esp_err_t write_work_page_order_nvs(nvs_handle_t nvs,
                                     esp_err_t err,
                                     const uint8_t *page_order,
